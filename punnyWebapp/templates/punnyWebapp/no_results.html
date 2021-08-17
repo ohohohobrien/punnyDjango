@@ -1,0 +1,138 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>🤣 PUNNY</title>
+    <meta name="title" content="It's a pun life!">
+    <meta name="theme-color" content="#FBBF24"/>
+    <meta name="description" content="Find, share and understand puns, idioms and expressions!">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ohohohobrien.github.io/punny/">
+    <meta property="og:title" content="It's a pun life!">
+    <meta property="og:description" content="Find, share and understand puns, idioms and expressions!">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Emojione_1F602.svg/1200px-Emojione_1F602.svg.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ohohohobrien.github.io/punny/">
+    <meta property="twitter:title" content="It's a pun life!">
+    <meta property="twitter:description" content="Find, share and understand puns, idioms and expressions!">
+    <meta property="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Emojione_1F602.svg/1200px-Emojione_1F602.svg.png">
+
+    <link rel="stylesheet" href="{% static 'punnyWebapp/styles.css' %}">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="{% static 'punnyWebapp/home.js' %}"></script>
+
+</head>
+
+<body class="text-gray-800 dark:text-white font-roboto bg-contain bg-gradient-to-br to-purple-400 from-blue-400 dark:to-blue-800 dark:from-blue-900">
+
+    <div><!-- content wrapper -->
+        <div class="fixed w-full z-10 top-0 dark:text-yellow-400" x-data="{selected:null}"> 
+            <nav class="flex justify-between bg-yellow-400 dark:bg-gray-800 shadow-sm">
+                <div>
+                    <h1 class="font-bold uppercase p-4">
+                        <a href="{% url 'home' %}">🤣 Punny</a>
+                    </h1>
+                </div>
+                <button class="mr-4" type="button" @click="selected !== 2 ? selected = 2 : selected = null" aria-label="menu"> 
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+            <!-- hidden dropdown menu -->
+            <div class="bg-yellow-400 dark:bg-gray-800 shadow-sm max-h-0 relative overflow-hidden transition-all duration-700" x-ref="container2" x-bind:style="selected == 2 ? 'max-height: ' + ($refs.container2.scrollHeight - 40) + 'px' : ''">
+                <div class="flex justify-center">
+                    <!-- anchor tags-->
+                    <div class="p-1 pr-2 font-bold uppercase">
+                        <ul class="flex justify-center space-x-5">
+                            <li>
+                                <a href="{% url 'home' %}">home</a>
+                            </li>
+                            <li>
+                                <a href="{{ pun.pk }}">random</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'create'%}">create</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- dark toggle -->
+                    <div class="p-1 flex justify-center">
+                        <!-- Toggle for dark mode -->
+                        <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <div class="flex items-center justify-center mb-12">
+                            <label for="toggleB" class="flex items-center cursor-pointer">
+                            <!-- toggle -->
+                            <div class="relative">
+                                <!-- input -->
+                                <input type="checkbox" id="toggleB" class="sr-only" aria-label="dark mode">
+                                <!-- line -->
+                                <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                                <!-- dot -->
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                            </div>
+                            </label>
+                        </div>
+                        <svg class="w-6 h-6 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end nav -->
+
+        <div class="h-20"></div>
+
+        <div class="fadeIn" x-data="{selected:null}">
+        
+            <main class="px-2 py-2 md:px-10">
+                <div class="bg-yellow-300 dark:bg-gray-800 px-5 py-2 pb-5 rounded-sm shadow-2xl divide-y-2 divide-black dark:divide-yellow-400">
+                    <p class="text-4xl text-shadow-md my-16 md:text-center lg:text-5xl">we didn't find anything for "<span class="text-white dark:text-yellow-400 font-bold italic">{{ query_text }}</span>"! 😥 </br></br> why not try again below with something different? 👇</p>
+                </div>
+            </main>
+
+            <section class="px-2 py-2 md:px-10">
+                <form action="{% url 'search_results' %}" id="search-form" method="get" class="">
+                    <div class="bg-yellow-300 dark:bg-gray-800 px-5 py-5 pb-5 rounded-sm rounded-br-none shadow-2xl">
+                        <div class="flex justify-start">
+                            <p class="text-3xl italic font-thin dark:text-yellow-400">search:</p>
+                            <!--
+                                <input id="searchBar" class="text-xl ml-10 text-shadow-md w-full p-2 rounded-sm resize-y bg-yellow-100 dark:bg-gray-600 dark:text-yellow-300 focus:bg-yellow-200 dark:hover:border-yellow-400 dark:focus:bg-black-700 transform ease-in-out duration-500" name="searchBar" cols="2" rows="2" placeholder="keywords here"></input>
+                            -->
+                            {% csrf_token %}
+                            {{ form }}
+
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" value="search" id="searchButton" class="bg-yellow-300 hover:bg-yellow-400 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-900 rounded-sm rounded-t-none shadow-2xl h-8 w-12 md:h-14 md:w-24 lg:h-16 lg:w-32 transform ease-in-out duration-500" aria-label="search">
+                            <svg class="w-6 h-6 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+                        </but>
+                    </div>
+                </form>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- content footer-->
+    <footer class="bg-yellow-300 dark:bg-gray-800 p-5 dark:text-yellow-400 mt-20">
+        <h2 class="flex justify-center">website made by Sean O'Brien</h2>
+        <div class="flex justify-center space-x-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h2 class="font-bold">
+                <a class="cursor-pointer hover:underline" href="https://ohohohobrien.github.io/portfolio/" target="_blank">
+                    find me here
+                </a>
+            </h2>
+        </div>
+    </footer>
+    
+</body>
+</html>

@@ -1,0 +1,224 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>🤣 PUNNY</title>
+    <meta name="title" content="It's a pun life!">
+    <meta name="theme-color" content="#FBBF24"/>
+    <meta name="description" content="Find, share and understand puns, idioms and expressions!">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ohohohobrien.github.io/punny/">
+    <meta property="og:title" content="It's a pun life!">
+    <meta property="og:description" content="Find, share and understand puns, idioms and expressions!">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Emojione_1F602.svg/1200px-Emojione_1F602.svg.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ohohohobrien.github.io/punny/">
+    <meta property="twitter:title" content="It's a pun life!">
+    <meta property="twitter:description" content="Find, share and understand puns, idioms and expressions!">
+    <meta property="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Emojione_1F602.svg/1200px-Emojione_1F602.svg.png">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/vaakash/socializer@2f749eb/css/socializer.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'punnyWebapp/styles.css' %}">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="{% static 'punnyWebapp/index.min.js' %}"></script>
+    <script defer src="{% static 'punnyWebapp/create.js' %}"></script>
+    <script defer src="{% static 'punnyWebapp/socializer.js' %}"></script>
+
+</head>
+
+<body class="text-gray-800 dark:text-white font-roboto bg-contain bg-gradient-to-br to-purple-400 from-blue-400 dark:to-blue-800 dark:from-blue-900">
+
+    <canvas class="absolute w-auto z-20" style="pointer-events: none;" id="my-canvas"></canvas>
+
+    <div class="lg:mb-20"><!-- content wrapper -->
+        <div class="fixed w-full z-30 top-0 dark:text-yellow-400" x-data="{selected:null}"> 
+            <nav class="flex justify-between bg-yellow-400 dark:bg-gray-800 shadow-sm">
+                <div>
+                    <h1 class="font-bold uppercase p-4">
+                        <a href="{% url 'home' %}">🤣 Punny</a>
+                    </h1>
+                </div>
+                <button class="mr-4" type="button" @click="selected !== 2 ? selected = 2 : selected = null"> 
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </nav>
+            <!-- hidden dropdown menu -->
+            <div class="bg-yellow-400 dark:bg-gray-800 shadow-sm max-h-0 relative overflow-hidden transition-all duration-700" x-ref="container2" x-bind:style="selected == 2 ? 'max-height: ' + ($refs.container2.scrollHeight - 40) + 'px' : ''">
+                <div class="flex justify-center">
+                    <!-- anchor tags-->
+                    <div class="p-1 pr-2 font-bold uppercase">
+                        <ul class="flex justify-center space-x-5">
+                            <li>
+                                <a href="{% url 'home'%}">home</a>
+                            </li>
+                            <li>
+                                <a href="{{ random_pun.pk }}">random</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'create'%}">create</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- dark toggle -->
+                    <div class="p-1 flex justify-center">
+                        <!-- Toggle for dark mode -->
+                        <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <div class="flex items-center justify-center mb-12">
+                            <label for="toggleB" class="flex items-center cursor-pointer">
+                            <!-- toggle -->
+                            <div class="relative">
+                                <!-- input -->
+                                <input type="checkbox" id="toggleB" class="sr-only">
+                                <!-- line -->
+                                <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                                <!-- dot -->
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                            </div>
+                            </label>
+                        </div>
+                        <svg class="w-6 h-6 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end nav -->
+
+        <div class="h-20"></div>
+
+        <section id="section1" class="fadeIn">
+            <div>
+                <div class="bg-yellow-300 dark:bg-gray-800 p-5 dark:text-yellow-400">
+                    <p class="text-center text-3xl text-shadow-md p-4">✍️ write down your favourite pun below and click next! 🤣</p>
+                </div>
+            
+                <main class="px-2 py-2 mt-5 md:px-10 lg:px-20">
+                    <div id="punContentDiv" class="bg-yellow-300 dark:bg-gray-800 px-5 py-10 rounded-sm shadow-2xl">
+                        <textarea id="punContent" class="text-3xl text-shadow-md w-full min-h-0 p-5 rounded-sm resize-y bg-yellow-100 dark:bg-gray-600 dark:text-yellow-300 focus:bg-yellow-200 dark:hover:border-yellow-400 dark:focus:bg-black-700 transform ease-in-out duration-500" name="punContent" id="" cols="5" rows="5" placeholder="write your pun here!"></textarea>
+                        <span style="display: none;" class="text-xs font-bold text-red-700" id="punContentHelper">please enter a pun with more than 3 characters.</span>
+                        <span style="display: none;" class="text-xs font-bold text-red-700" id="punContentHelperSpecialCharacter">please don't use the characters "<" or ">" in your pun.</span>
+                    </div>
+                </main>
+    
+            </div>
+    
+            <div class="flex justify-end px-2 py-2 mt-5 md:px-10 lg:px-20">
+                <button id="nextButton" class="opacity-40 bg-yellow-300 hover:bg-yellow-400 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-900 rounded-sm shadow-2xl h-8 w-12 md:h-14 md:w-24 lg:h-16 lg:w-32 transform ease-in-out duration-500" aria-label="next page">
+                    <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section2" style="display: none;">
+            <div>
+                <div class="bg-yellow-300 dark:bg-gray-800 p-5 dark:text-yellow-400">
+                    <p class="text-center text-3xl text-shadow-md p-4">✍️ add some explanation to help users understand 🤔</p>
+                    <ul class="list-disc space-y-8 p-4 md:p-10 lg:p-10 md:mx-4 lg:mx-8">
+                        <li>
+                            <span class="text-xl md:text-2xl text-shadow-md">highlight important parts of the pun and click the quote button to explain it</span>
+                        </li>
+                        <li>
+                            <span class="text-xl md:text-2xl text-shadow-md">click the plus button to add extra information</span>
+                        </li>
+                    </ul>
+                </div>
+            
+                <main class="px-2 py-2 mt-5 md:px-10 lg:px-20">
+                    <div id="punContentDisplayDiv" class="bg-yellow-300 dark:bg-gray-800 px-5 py-10 rounded-sm rounded-br-none shadow-2xl">
+                        <!--
+                            need to style this more
+                        -->
+                        <h3 class="text-2xl text-shadow-md mb-4 dark:text-yellow-400">your pun:</h3>
+                        <div class="">
+                            <p id="punContentDisplay" class="whitespace-pre-line text-3xl text-shadow-md w-full min-h-0 p-5 rounded-sm bg-yellow-100 dark:bg-gray-600 dark:text-yellow-300 focus:bg-yellow-200 dark:hover:border-yellow-400 dark:focus:bg-black-700 transform ease-in-out duration-500"></p>
+                        </div>
+                        <span style="display: none;" class="text-xs font-bold text-red-700" id="explanationContentHelper">please make at least 1 explanation for this pun.</span>
+                        <span style="display: none;" class="text-xs font-bold text-red-700" id="explanationContentHelperQuoteError">you already quoted this part for an explanation. check out the preview below to see what you've highlighted.</span>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="quoteButton" style="z-index: 20; display: none;" class="text-white bg-blue-400 hover:bg-blue-500 dark:bg-yellow-400 dark:text-black dark:hover:bg-yellow-500 rounded-sm shadow-2xl h-8 w-12 md:h-14 md:w-24 lg:h-16 lg:w-32 transform ease-in-out duration-500" aria-label="add quote of selected text">
+                            <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                        </button>
+                        <button id="addExplanationButton" class="bg-yellow-300 hover:bg-yellow-400 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-900 rounded-sm rounded-t-none shadow-2xl h-8 w-12 md:h-14 md:w-24 lg:h-16 lg:w-32 transform ease-in-out duration-500" aria-label="add explanation">
+                            <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                    </div>
+                </main>
+
+                <div id="punExplanationInsertContainer">
+                    <!-- insert JS created elements here! -->
+                </div>
+
+                <main class="px-2 py-2 mt-10 md:px-10 md:mt-24 lg:px-20 lg:mt-36">
+                    <div id="previewDisplayDiv" class="bg-yellow-300 dark:bg-gray-800 px-5 py-10 rounded-sm rounded-br-none shadow-2xl divide-y-2 divide-black dark:divide-yellow-400">
+
+                        <h3 class="text-2xl text-shadow-md mb-4 dark:text-yellow-400">preview of what it will look like: 👇😂👇</h3>
+                        <div class="">
+                            <p id="previewContentDisplay" class="whitespace-pre-line text-4xl text-shadow-md w-full min-h-0 p-5 rounded-sm dark:text-white"></p>
+                        </div>
+                    </div>
+                </main>
+
+            </div>
+
+            <div class="flex justify-between px-2 py-2 mt-5 md:px-10 lg:px-20">
+                <button id="backButton" class="bg-yellow-300 hover:bg-yellow-400 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-900 rounded-sm shadow-2xl h-8 w-12 md:h-14 md:w-24 lg:h-16 lg:w-32 transform ease-in-out duration-500" aria-label="complete">
+                    <svg class="w-6 h-6 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+                <button id="nextButton2" class="opacity-40 bg-yellow-300 hover:bg-yellow-400 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-900 rounded-sm shadow-2xl h-8 w-12 md:h-14 md:w-24 lg:h-16 lg:w-32 transform ease-in-out duration-500" aria-label="complete">
+                    <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <section id="section3" style="display: none;">
+            <div>
+                <div class="bg-yellow-300 dark:bg-gray-800 p-5 dark:text-yellow-400">
+                    <p class="text-center text-3xl text-shadow-md p-4">🙌 your pun has been made! 🎉</p>
+                    <ul class="text-center space-y-8 p-4 md:p-10 lg:p-10 md:mx-4 lg:mx-8">
+                        <li>
+                            <a id="newPunPage" class="text-xl md:text-2xl text-shadow-md cursor-pointer underline" href="">find it here</a>
+                        </li>
+                        <li>
+                            <span class="text-xl md:text-2xl text-shadow-md">👇 share it 👇</span>
+                        </li>
+                        <li>
+                            <div id="shareButtons" class="socializer" data-features="32px,opacity,bdr-md,bg-none,pad" data-sites="facebook,twitter,reddit,line" data-meta-link="" data-meta-title="Your pun!" </div> 
+                        </li>
+                        <li>
+                            <a class="text-xl md:text-2xl text-shadow-md cursor-pointer underline" href="{% url 'create'%}">create another</a>
+                        </li>
+                        <li>
+                            <a class="text-xl md:text-2xl text-shadow-md cursor-pointer underline" href="{% url 'home'%}">return home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- content footer-->
+    <footer class="bg-yellow-300 dark:bg-gray-800 p-5 dark:text-yellow-400 mt-10 md:mt-16 lg:mt-24">
+        <h2 class="flex justify-center">website made by Sean O'Brien</h2>
+        <div class="flex justify-center space-x-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h2 class="font-bold">
+                <a class="cursor-pointer hover:underline" href="https://ohohohobrien.github.io/portfolio/" target="_blank">
+                    find me here
+                </a>
+            </h2>
+        </div>
+    </footer>
+    
+</body>
+</html>
