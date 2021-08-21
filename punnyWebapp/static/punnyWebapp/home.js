@@ -25,10 +25,10 @@ function init() {
         darkToggle.checked = false;
         document.getElementsByTagName('meta')["theme-color"].content = "#FBBF24";
     }
-
+    
+    
     // Get the input field
     const searchField = document.getElementById("searchBar");
-    //const searchButton = document.getElementById("searchButton");
 
     // Allow the input field to be used by pressing enter
     searchField.addEventListener("keyup", function(event) {
@@ -45,42 +45,6 @@ function init() {
         }
     });
 
-
-    //searchButton.addEventListener('click', () => {
-
-        /*
-        const searchKeywords = searchField.value;
-        // control the fetch request
-        const data = JSON.stringify({
-            query: searchKeywords,
-        })
-
-        let csrftoken = getCookie('csrftoken');
-        let response = fetch("/search", {
-            method: 'POST',
-            body: data,
-            headers: { 'Accept': 'application/json, text/plain,',
-                'Content-Type': 'application/json',
-                "X-CSRFToken": csrftoken },
-            redirect: 'follow',
-        })
-        */
-        /*
-        .then(function(data) {
-            data.text().then( text => {
-                console.log(text);
-            });
-        })
-        .then(result => {
-            console.log('Success:', result);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            console.log("something went wrong with uploading the pun")
-        });
-        */
-    //});
-    
 }
 
 // get cookie for fetch
