@@ -1,12 +1,15 @@
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import redirect, render
-from django.http import HttpResponse, HttpResponseRedirect
-from random import choice    
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from random import choice
 from django.core.paginator import Paginator, EmptyPage
 from django.db import models
 from django.db.models.functions import Cast
 from django.urls import reverse
 from django import forms
+from django.views.decorators.cache import cache_control
+import datetime
+
 
 from .models import Pun
 
@@ -14,11 +17,11 @@ import json
 
 class NewSearchForm(forms.Form):
     query_text = forms.CharField(required=True, min_length=3, max_length=20, widget=forms.TextInput(attrs={
-        'class':'text-xl ml-10 text-shadow-md w-full p-2 rounded-sm resize-y bg-yellow-100 dark:bg-gray-600 dark:text-yellow-300 focus:bg-yellow-200 dark:hover:border-yellow-400 dark:focus:bg-black-700 transform ease-in-out duration-500',
+        'class':'md:flex-1 sm:px-2 text-xl text-shadow-md w-full p-2 rounded-sm resize-y bg-yellow-100 dark:bg-gray-600 dark:text-yellow-300 focus:bg-yellow-200 dark:hover:border-yellow-400 dark:focus:bg-black-700 transform ease-in-out duration-500',
         'id':'searchBar',
         'name':"searchBar",
-        'cols':"2", 
-        'rows':"2",
+        'cols':"1",
+        'rows':"1",
         'placeholder':"keywords here"
     }))
 
@@ -28,19 +31,37 @@ class NewSearchForm(forms.Form):
 
 def home(request):
 
-    random_pun_object = choice(Pun.objects.all())
+    today = datetime.date.today() # date representing today's date
+    same_day_puns = Pun.objects.filter(pub_date__gt=today) # filter objects created today
+
+    if len(same_day_puns) == 0:
+        context = {
+            "top_pun": False,
+            "form": NewSearchForm(),
+        }
+        return render(request, 'punnyWebapp/home.html', context)
+
+    top_pun_of_the_day = same_day_puns.order_by('-score')[0]
+    print(top_pun_of_the_day)
+
+    pun_content = top_pun_of_the_day.pun_content["content"]
 
     context = {
-        "pun": random_pun_object,
+        "top_pun": pun_content,
+        "pun_id": top_pun_of_the_day.pk,
         "form": NewSearchForm(),
     }
     return render(request, 'punnyWebapp/home.html', context)
+
+def random_link(request):
+    random_pun_object = choice(Pun.objects.all())
+
+    return HttpResponseRedirect(reverse('pun', args=[random_pun_object.id]))
 
 def pun(request, pun_id):
 
     try:
         pun_object = Pun.objects.get(id=pun_id)
-        random_pun_object = choice(Pun.objects.all())
     except:
         return HttpResponse("it didn't work...")
 
@@ -57,7 +78,7 @@ def pun(request, pun_id):
     explanation_list = []
 
     for key, value in JSON_object["explanation"].items():
-        
+
         # for pun content
         if (value["link"] == True):
             a = [value["stringStartPosition"], value["stringEndPosition"], value["id"]]
@@ -65,7 +86,7 @@ def pun(request, pun_id):
 
             # for explanation content
             substring_in_explanation = False
-            
+
             if (content_string[value["stringStartPosition"] : value["stringEndPosition"]] in value["explanationContent"]):
                 substring_in_explanation = True
             b = [value["id"], value["explanationContent"], substring_in_explanation, value["stringStartPosition"], value["stringEndPosition"]]
@@ -76,7 +97,7 @@ def pun(request, pun_id):
             explanation_list.append(b)
 
     new_content_string = content_string
-    
+
     print(string_coordinates_list)
     if (len(string_coordinates_list) > 0):
         string_coordinates_list.sort(reverse=True)
@@ -106,7 +127,6 @@ def pun(request, pun_id):
         "pun": pun_object,
         "formatted_pun": new_content_string,
         "explanation_content": explanation_content,
-        "random_pun": random_pun_object
     }
     return render(request, 'punnyWebapp/index.html', context)
 
@@ -149,13 +169,7 @@ def vote(request):
 
 def create(request):
 
-    random_pun_object = choice(Pun.objects.all())
-
-    context = {
-        "random_pun": random_pun_object,
-    }
-
-    return render(request, 'punnyWebapp/create.html', context)
+    return render(request, 'punnyWebapp/create.html')
 
 def upload(request):
     if request.method == "POST":
@@ -172,7 +186,7 @@ def upload(request):
         print("----------------------")
 
         new_pun = Pun(
-            pun_content=post_data.get('punJSON'), 
+            pun_content=post_data.get('punJSON'),
         )
         new_pun.save()
 
@@ -180,11 +194,30 @@ def upload(request):
 
         return HttpResponse(new_pun_id)
 
+@cache_control(no_cache=True, must_revalidate=True)
+def new_link(request):
+    if request.method == "GET":
+
+        print("----------------------")
+        print("Request received of...")
+        #print(request)
+        print("----------------------")
+
+        #post_data = json.loads(request.body.decode("utf-8"))
+        print("----------------------")
+        print("Post data received of...")
+        #print(post_data)
+        print("----------------------")
+
+        new_pun = choice(Pun.objects.all())
+
+        new_pun_id = new_pun.id
+
+        return JsonResponse({"link": new_pun_id}, status = 201)
+
 def search_results(request):
 
     print("made it to the search results view")
-
-    random_pun_object = choice(Pun.objects.all())
 
     query = request.GET.get("q", "")
     print("found query of...")
@@ -205,7 +238,7 @@ def search_results(request):
         print("-----------------------------------------------------------------")
 
     if (request.method == 'GET'):
-        
+
         result = Pun.objects.annotate(content=Cast('pun_content__content', models.TextField()),).filter(content__contains=query_text).order_by('-score')
         print("found results of the following:")
         print(result)
@@ -231,7 +264,6 @@ def search_results(request):
                 page = p.page(1)
 
             context = {
-                "random_pun": random_pun_object,
                 "puns": page,
                 "search": True,
             }
@@ -243,15 +275,10 @@ def search_results(request):
         else:
             # no results found
             context = {
-                "random_pun": random_pun_object,
                 "query_text": query_text,
                 "form": NewSearchForm(),
             }
-            
+
             return render(request, 'punnyWebapp/no_results.html', context)
 
-    context = {
-        "random_pun": random_pun_object,
-    }
-    
-    return render(request, 'punnyWebapp/home.html', context)
+    return render(request, 'punnyWebapp/home.html')
